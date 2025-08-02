@@ -1,20 +1,28 @@
-import React from "react";
-import "../index.css";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../index.css"; // this includes the bounce animation
 
 const Loader = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/dashboard");
+    }, 2500); // show loader for 2.5 seconds
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-gray-950 flex-col">
-      <div className="loader mb-6">
-        <div className="bounce bounce1"></div>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
+      <div className="loader mb-4">
+        <div className="bounce"></div>
         <div className="bounce bounce2"></div>
         <div className="bounce bounce3"></div>
       </div>
-      <h1 className="text-xl text-white font-semibold">
-        Welcome to <span className="text-blue-400">College Companion</span>
+      <h1 className="text-lg font-semibold text-center">
+        Welcome to Mohammed Imad Umar's College Companion
       </h1>
-      <p className="text-sm text-gray-400 mt-2">
-        Designed & Developed by <span className="text-blue-300 font-medium">Mohammed Imad Umar</span>
-      </p>
     </div>
   );
 };
