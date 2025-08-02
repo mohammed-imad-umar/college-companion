@@ -1,44 +1,34 @@
 // src/pages/Dashboard.jsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+
+const features = [
+  { name: "CGPA Calculator", path: "/cgpa" },
+  { name: "Assignment Tracker", path: "/assignments" },
+  { name: "Notes App", path: "/notes" },
+  { name: "Class Links", path: "/class-links" },
+  { name: "Syllabus Vault", path: "/syllabus" },
+  { name: "Attendance Tracker", path: "/attendance" },
+  { name: "Timetable Planner", path: "/timetable" },
+  { name: "Sticky Notes", path: "/sticky-notes" },
+];
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { darkMode, toggleTheme } = useTheme();
-
-  const buttons = [
-    { label: "CGPA Calculator", path: "/cgpa" },
-    { label: "Assignment Tracker", path: "/assignments" },
-    { label: "Notes App", path: "/notes" },
-    { label: "Class Links", path: "/class-links" },
-    { label: "Syllabus Vault", path: "/syllabus" },
-    { label: "Attendance Tracker", path: "/attendance" },
-    { label: "Timetable Planner", path: "/timetable" },
-    { label: "Sticky Notes", path: "/sticky-notes" },
-  ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center gap-8 p-6">
-      <div className="flex justify-between w-full max-w-xl">
-        <h1 className="text-xl font-bold">
-          Welcome, Mohammed Imad Umar
-        </h1>
-        <button
-          onClick={toggleTheme}
-          className="px-4 py-1 rounded bg-gray-700 hover:bg-gray-600 text-sm"
-        >
-          {darkMode ? "Light Mode" : "Dark Mode"}
-        </button>
-      </div>
-
-      <div className="w-full max-w-md flex flex-col gap-4">
-        {buttons.map((btn, index) => (
+    <div className="min-h-screen bg-gray-900 text-white p-6 pt-20">
+      <h1 className="text-4xl font-bold mb-10 text-center text-blue-400">
+        Welcome to College Companion
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {features.map((feature, index) => (
           <button
             key={index}
-            onClick={() => navigate(btn.path)}
-            className="glow-button bg-blue-600 hover:bg-blue-700 text-white py-2 rounded w-full"
+            className="bg-blue-600 glow-button hover:bg-blue-800 transition-all p-6 rounded-2xl shadow-lg text-lg font-semibold"
+            onClick={() => navigate(feature.path)}
           >
-            {btn.label}
+            {feature.name}
           </button>
         ))}
       </div>
