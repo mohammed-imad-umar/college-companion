@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Loader from "./components/Loader";
@@ -6,8 +5,6 @@ import Footer from "./components/Footer";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import Dashboard from "./pages/Dashboard";
-
-// Feature components (ensure these files exist)
 import CGPA from "./pages/CGPA";
 import Assignments from "./pages/Assignments";
 import Notes from "./pages/Notes";
@@ -20,7 +17,6 @@ import StickyNotes from "./pages/StickyNotes";
 export default function App() {
   return (
     <Router>
-      <Loader />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
