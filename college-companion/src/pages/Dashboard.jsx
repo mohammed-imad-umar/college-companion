@@ -1,31 +1,32 @@
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const [user, loading] = useAuthState(auth);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
-        <div className="text-center">
-          <div className="loader mb-4 flex justify-center gap-2">
-            <div className="bounce"></div>
-            <div className="bounce bounce2"></div>
-            <div className="bounce bounce3"></div>
-          </div>
-          <p className="text-sm">College Companion is loading...</p>
-          <p className="text-xs mt-2">Crafted by <span className="text-blue-400">Mohammed Imad Umar</span></p>
-        </div>
-      </div>
-    );
-  }
+  const features = [
+    { name: "CGPA Calculator", path: "/cgpa" },
+    { name: "Assignment Tracker", path: "/assignments" },
+    { name: "Notes App", path: "/notes" },
+    { name: "Class Links", path: "/class-links" },
+    { name: "Syllabus Vault", path: "/syllabus" },
+    { name: "Attendance Tracker", path: "/attendance" },
+    { name: "Timetable Planner", path: "/timetable" },
+    { name: "Sticky Notes", path: "/sticky-notes" },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-2xl mx-auto text-center mt-20">
-        <h1 className="text-3xl font-bold mb-4">Welcome back 👋</h1>
-        <p className="text-lg">Your all-in-one College Companion dashboard</p>
-        <p className="text-sm text-gray-400 mt-2">Built by <span className="text-blue-400">Mohammed Imad Umar</span></p>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Welcome to Mohammed Imad Umar’s College Companion
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {features.map((feature, index) => (
+          <Link
+            key={index}
+            to={feature.path}
+            className="bg-gray-800 hover:bg-blue-700 p-6 rounded-lg text-center transition duration-200 shadow-md"
+          >
+            <h2 className="text-xl font-semibold">{feature.name}</h2>
+          </Link>
+        ))}
       </div>
     </div>
   );
