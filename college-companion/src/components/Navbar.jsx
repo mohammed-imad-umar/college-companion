@@ -1,39 +1,28 @@
-import { Link, useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-  const [user] = useAuthState(auth);
-  const navigate = useNavigate();
+  const location = useLocation();
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/login");
-  };
-
-  if (!user) return null; // Hide navbar when logged out
+  if (isAuthPage) return null; // hide navbar on login/signup pages
 
   return (
-    <nav className="bg-gray-900 text-white p-4 shadow-md flex justify-between items-center">
-      <h1 className="text-xl font-bold">College Companion</h1>
-      <ul className="flex flex-wrap gap-4 text-sm">
-        <li><Link to="/" className="hover:text-blue-400">Dashboard</Link></li>
-        <li><Link to="/cgpa" className="hover:text-blue-400">CGPA</Link></li>
-        <li><Link to="/assignments" className="hover:text-blue-400">Assignments</Link></li>
-        <li><Link to="/notes" className="hover:text-blue-400">Notes</Link></li>
-        <li><Link to="/links" className="hover:text-blue-400">Links</Link></li>
-        <li><Link to="/syllabus" className="hover:text-blue-400">Syllabus</Link></li>
-        <li><Link to="/attendance" className="hover:text-blue-400">Attendance</Link></li>
-        <li><Link to="/timetable" className="hover:text-blue-400">Timetable</Link></li>
-        <li><Link to="/stickynotes" className="hover:text-blue-400">Sticky Notes</Link></li>
-      </ul>
-      <button
-        onClick={handleLogout}
-        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
-      >
-        Logout
-      </button>
+    <nav className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center shadow-md">
+      <div className="text-xl font-bold">
+        Mohammed Imad Umar’s College Companion
+      </div>
+      <div className="flex gap-4 items-center text-sm">
+        <Link to="/dashboard" className="hover:text-blue-400">Dashboard</Link>
+        <Link to="/cgpa" className="hover:text-blue-400">CGPA</Link>
+        <Link to="/assignments" className="hover:text-blue-400">Assignments</Link>
+        <Link to="/notes" className="hover:text-blue-400">Notes</Link>
+        <Link to="/class-links" className="hover:text-blue-400">Class Links</Link>
+        <Link to="/syllabus" className="hover:text-blue-400">Syllabus</Link>
+        <Link to="/attendance" className="hover:text-blue-400">Attendance</Link>
+        <Link to="/timetable" className="hover:text-blue-400">Timetable</Link>
+        <Link to="/sticky-notes" className="hover:text-blue-400">Sticky Notes</Link>
+        <Link to="/login" className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-700">Logout</Link>
+      </div>
     </nav>
   );
 };
