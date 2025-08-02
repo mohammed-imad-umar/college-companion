@@ -1,93 +1,107 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const AttendanceTracker = () => {
   const [subjects, setSubjects] = useState([]);
   const [subjectName, setSubjectName] = useState("");
+  const [totalClasses, setTotalClasses] = useState("");
+  const [attendedClasses, setAttendedClasses] = useState("");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("attendanceData");
+    if (stored) {
+      setSubjects(JSON.parse(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("attendanceData", JSON.stringify(subjects));
+  }, [subjects]);
 
   const addSubject = () => {
-    if (!subjectName.trim()) return;
-    setSubjects([...subjects, { name: subjectName, attended: 0, total: 0 }]);
+    if (!subjectName || !totalClasses || !attendedClasses) {
+      return alert("Fill all fields");
+    }
+    setSubjects([
+      {
+        id: Date.now(),
+        name: subjectName,
+        total: parseInt(totalClasses),
+        attended: parseInt(attendedClasses),
+      },
+      ...subjects,
+    ]);
     setSubjectName("");
+    setTotalClasses("");
+    setAttendedClasses("");
   };
 
-  const markAttendance = (index, present) => {
-    const updated = [...subjects];
-    updated[index].total += 1;
-    if (present) updated[index].attended += 1;
-    setSubjects(updated);
+  const deleteSubject = (id) => {
+    setSubjects(subjects.filter((subj) => subj.id !== id));
   };
 
-  const getPercentage = (subj) => {
-    if (subj.total === 0) return "0%";
-    return `${((subj.attended / subj.total) * 100).toFixed(1)}%`;
-  };
-
-  const deleteSubject = (index) => {
-    const updated = subjects.filter((_, i) => i !== index);
-    setSubjects(updated);
+  const getPercentage = (attended, total) => {
+    if (total === 0) return "0%";
+    return `${((attended / total) * 100).toFixed(1)}%`;
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-4">Attendance Tracker</h1>
-
-        <div className="flex gap-2 mb-4">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Attendance Tracker</h1>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="grid md:grid-cols-3 gap-4">
           <input
             type="text"
+            placeholder="Subject"
             value={subjectName}
             onChange={(e) => setSubjectName(e.target.value)}
-            placeholder="Enter subject name"
-            className="flex-1 p-2 rounded bg-gray-800"
+            className="p-2 bg-gray-800 border border-gray-700 rounded"
           />
-          <button
-            onClick={addSubject}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
-          >
-            Add
-          </button>
+          <input
+            type="number"
+            placeholder="Total Classes"
+            value={totalClasses}
+            onChange={(e) => setTotalClasses(e.target.value)}
+            className="p-2 bg-gray-800 border border-gray-700 rounded"
+          />
+          <input
+            type="number"
+            placeholder="Attended Classes"
+            value={attendedClasses}
+            onChange={(e) => setAttendedClasses(e.target.value)}
+            className="p-2 bg-gray-800 border border-gray-700 rounded"
+          />
         </div>
+        <button
+          onClick={addSubject}
+          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+        >
+          Add Subject
+        </button>
 
-        {subjects.length === 0 ? (
-          <p className="text-center text-gray-400">No subjects yet.</p>
-        ) : (
-          <ul className="space-y-4">
-            {subjects.map((subj, index) => (
-              <li
-                key={index}
-                className="bg-gray-800 p-4 rounded flex flex-col sm:flex-row sm:justify-between items-start sm:items-center"
+        <div className="grid sm:grid-cols-2 gap-4 pt-4">
+          {subjects.map((subj) => (
+            <div
+              key={subj.id}
+              className="bg-gray-800 p-4 rounded shadow flex justify-between items-center"
+            >
+              <div>
+                <h2 className="text-lg font-semibold">{subj.name}</h2>
+                <p className="text-sm text-gray-300">
+                  {subj.attended}/{subj.total} classes attended
+                </p>
+                <p className="text-sm text-yellow-400">
+                  Attendance: {getPercentage(subj.attended, subj.total)}
+                </p>
+              </div>
+              <button
+                onClick={() => deleteSubject(subj.id)}
+                className="bg-red-600 hover:bg-red-700 text-sm px-3 py-1 rounded"
               >
-                <div>
-                  <h2 className="font-bold">{subj.name}</h2>
-                  <p className="text-sm text-gray-400">
-                    Attended: {subj.attended} / Total: {subj.total} —{" "}
-                    <span className="text-blue-400">{getPercentage(subj)}</span>
-                  </p>
-                </div>
-                <div className="mt-2 sm:mt-0 flex gap-2">
-                  <button
-                    onClick={() => markAttendance(index, true)}
-                    className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-sm"
-                  >
-                    Present
-                  </button>
-                  <button
-                    onClick={() => markAttendance(index, false)}
-                    className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-sm"
-                  >
-                    Absent
-                  </button>
-                  <button
-                    onClick={() => deleteSubject(index)}
-                    className="text-red-400 hover:text-red-600 text-sm ml-2"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
