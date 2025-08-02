@@ -1,7 +1,3 @@
 [build]
-  base = "college-companion"
-  publish = "college-companion/dist"
   command = "npm run build"
-
-[dev]
-  framework = "vite"
+  publish = "dist"
