@@ -1,88 +1,66 @@
 import { useState } from "react";
 
 const CGPACalculator = () => {
-  const [semesters, setSemesters] = useState([{ sgpa: "", credits: "" }]);
+  const [semesters, setSemesters] = useState([{ sgpa: "" }]);
   const [cgpa, setCgpa] = useState(null);
 
-  const handleChange = (index, field, value) => {
+  const handleSGPAChange = (index, value) => {
     const updated = [...semesters];
-    updated[index][field] = value;
+    updated[index].sgpa = value;
     setSemesters(updated);
   };
 
   const addSemester = () => {
-    setSemesters([...semesters, { sgpa: "", credits: "" }]);
+    setSemesters([...semesters, { sgpa: "" }]);
   };
 
   const calculateCGPA = () => {
-    let totalPoints = 0;
-    let totalCredits = 0;
-
-    semesters.forEach((sem) => {
-      const sgpa = parseFloat(sem.sgpa);
-      const credits = parseFloat(sem.credits);
-      if (!isNaN(sgpa) && !isNaN(credits)) {
-        totalPoints += sgpa * credits;
-        totalCredits += credits;
-      }
-    });
-
-    if (totalCredits > 0) {
-      setCgpa((totalPoints / totalCredits).toFixed(2));
-    } else {
-      setCgpa("N/A");
+    const validSGPAs = semesters
+      .map((s) => parseFloat(s.sgpa))
+      .filter((num) => !isNaN(num));
+    if (validSGPAs.length === 0) {
+      setCgpa(null);
+      return;
     }
+    const total = validSGPAs.reduce((sum, sgpa) => sum + sgpa, 0);
+    const result = (total / validSGPAs.length).toFixed(2);
+    setCgpa(result);
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4 text-center">CGPA Calculator</h1>
-
-        {semesters.map((sem, index) => (
-          <div key={index} className="flex gap-4 mb-3">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">CGPA Calculator</h1>
+      <div className="space-y-4 max-w-md mx-auto">
+        {semesters.map((semester, index) => (
+          <div key={index}>
+            <label className="block mb-1">Semester {index + 1} SGPA:</label>
             <input
               type="number"
-              placeholder={`SGPA ${index + 1}`}
-              value={sem.sgpa}
-              onChange={(e) => handleChange(index, "sgpa", e.target.value)}
-              className="flex-1 p-2 rounded bg-gray-800 text-white"
               step="0.01"
-              min="0"
-              max="10"
-              required
-            />
-            <input
-              type="number"
-              placeholder="Credits"
-              value={sem.credits}
-              onChange={(e) => handleChange(index, "credits", e.target.value)}
-              className="flex-1 p-2 rounded bg-gray-800 text-white"
-              step="1"
-              min="1"
-              required
+              value={semester.sgpa}
+              onChange={(e) => handleSGPAChange(index, e.target.value)}
+              className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
             />
           </div>
         ))}
 
-        <div className="flex justify-center gap-4 mt-4">
-          <button
-            onClick={addSemester}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
-          >
-            Add Semester
-          </button>
-          <button
-            onClick={calculateCGPA}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
-          >
-            Calculate
-          </button>
-        </div>
+        <button
+          onClick={addSemester}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          Add Semester
+        </button>
+
+        <button
+          onClick={calculateCGPA}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded ml-2"
+        >
+          Calculate CGPA
+        </button>
 
         {cgpa && (
-          <div className="text-center mt-6 text-xl font-semibold text-blue-400">
-            Your CGPA is: {cgpa}
+          <div className="mt-4 text-xl text-center">
+            <strong>Your CGPA is:</strong> {cgpa}
           </div>
         )}
       </div>
