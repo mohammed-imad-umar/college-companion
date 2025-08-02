@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { Routes, Route } from "react-router-dom";
 import Loader from "./components/Loader";
+import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/PrivateRoute";
 
 import Dashboard from "./pages/Dashboard";
 import CGPACalculator from "./pages/CGPACalculator";
@@ -12,33 +12,89 @@ import SyllabusVault from "./pages/SyllabusVault";
 import AttendanceTracker from "./pages/AttendanceTracker";
 import TimeTablePlanner from "./pages/TimeTablePlanner";
 import StickyNotes from "./pages/StickyNotes";
+import Login from "./pages/Login";
 
 function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const delay = setTimeout(() => setLoading(false), 2500);
-    return () => clearTimeout(delay);
-  }, []);
-
-  if (loading) return <Loader />;
-
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/cgpa" element={<CGPACalculator />} />
-        <Route path="/assignments" element={<AssignmentTracker />} />
-        <Route path="/notes" element={<NotesApp />} />
-        <Route path="/links" element={<ClassLinks />} />
-        <Route path="/syllabus" element={<SyllabusVault />} />
-        <Route path="/attendance" element={<AttendanceTracker />} />
-        <Route path="/timetable" element={<TimeTablePlanner />} />
-        <Route path="/stickynotes" element={<StickyNotes />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cgpa"
+          element={
+            <PrivateRoute>
+              <CGPACalculator />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/assignments"
+          element={
+            <PrivateRoute>
+              <AssignmentTracker />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/notes"
+          element={
+            <PrivateRoute>
+              <NotesApp />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/links"
+          element={
+            <PrivateRoute>
+              <ClassLinks />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/syllabus"
+          element={
+            <PrivateRoute>
+              <SyllabusVault />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/attendance"
+          element={
+            <PrivateRoute>
+              <AttendanceTracker />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/timetable"
+          element={
+            <PrivateRoute>
+              <TimeTablePlanner />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/stickynotes"
+          element={
+            <PrivateRoute>
+              <StickyNotes />
+            </PrivateRoute>
+          }
+        />
       </Routes>
-    </div>
+    </>
   );
 }
 
