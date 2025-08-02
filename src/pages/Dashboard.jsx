@@ -1,45 +1,44 @@
-import React from "react";
+// src/pages/Dashboard.jsx
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-import { Sun, Moon } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { darkMode, toggleTheme } = useTheme();
 
-  const features = [
-    { name: "CGPA Calculator", path: "/cgpa" },
-    { name: "Assignments Tracker", path: "/assignments" },
-    { name: "Notes App", path: "/notes" },
-    { name: "Class Links", path: "/class-links" },
-    { name: "Syllabus Vault", path: "/syllabus" },
-    { name: "Attendance Tracker", path: "/attendance" },
-    { name: "Timetable Planner", path: "/timetable" },
-    { name: "Sticky Notes", path: "/sticky-notes" },
+  const buttons = [
+    { label: "CGPA Calculator", path: "/cgpa" },
+    { label: "Assignment Tracker", path: "/assignments" },
+    { label: "Notes App", path: "/notes" },
+    { label: "Class Links", path: "/class-links" },
+    { label: "Syllabus Vault", path: "/syllabus" },
+    { label: "Attendance Tracker", path: "/attendance" },
+    { label: "Timetable Planner", path: "/timetable" },
+    { label: "Sticky Notes", path: "/sticky-notes" },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center px-4">
-      {/* Top Bar */}
-      <div className="w-full flex justify-between items-center py-4">
-        <h1 className="text-2xl font-bold tracking-wide">College Companion</h1>
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center gap-8 p-6">
+      <div className="flex justify-between w-full max-w-xl">
+        <h1 className="text-xl font-bold">
+          Welcome, Mohammed Imad Umar
+        </h1>
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-full hover:bg-gray-700 transition duration-300"
+          className="px-4 py-1 rounded bg-gray-700 hover:bg-gray-600 text-sm"
         >
-          {darkMode ? <Sun className="text-yellow-300" /> : <Moon />}
+          {darkMode ? "Light Mode" : "Dark Mode"}
         </button>
       </div>
 
-      {/* Feature Buttons */}
-      <div className="w-full max-w-md mt-6 space-y-4">
-        {features.map((feature, idx) => (
+      <div className="w-full max-w-md flex flex-col gap-4">
+        {buttons.map((btn, index) => (
           <button
-            key={idx}
-            onClick={() => navigate(feature.path)}
-            className="glow-button w-full py-3 rounded bg-blue-600 hover:bg-blue-700 transition duration-300 text-lg font-semibold shadow-md"
+            key={index}
+            onClick={() => navigate(btn.path)}
+            className="glow-button bg-blue-600 hover:bg-blue-700 text-white py-2 rounded w-full"
           >
-            {feature.name}
+            {btn.label}
           </button>
         ))}
       </div>
