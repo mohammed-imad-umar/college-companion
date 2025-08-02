@@ -1,85 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const TimetablePlanner = () => {
   const [timetable, setTimetable] = useState({});
-  const [selectedDay, setSelectedDay] = useState("Monday");
-  const [newEntry, setNewEntry] = useState("");
 
-  const addEntry = () => {
-    if (!newEntry.trim()) return;
+  useEffect(() => {
+    const stored = localStorage.getItem("timetableData");
+    if (stored) {
+      setTimetable(JSON.parse(stored));
+    } else {
+      const defaultTable = {};
+      daysOfWeek.forEach(day => defaultTable[day] = ["", "", "", "", "", ""]);
+      setTimetable(defaultTable);
+    }
+  }, []);
 
+  useEffect(() => {
+    localStorage.setItem("timetableData", JSON.stringify(timetable));
+  }, [timetable]);
+
+  const handleChange = (day, index, value) => {
     const updated = { ...timetable };
-    if (!updated[selectedDay]) updated[selectedDay] = [];
-    updated[selectedDay].push(newEntry);
-    setTimetable(updated);
-    setNewEntry("");
-  };
-
-  const deleteEntry = (day, index) => {
-    const updated = { ...timetable };
-    updated[day].splice(index, 1);
+    updated[day][index] = value;
     setTimetable(updated);
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-4">Timetable Planner</h1>
-
-        <div className="flex flex-col sm:flex-row gap-2 mb-4">
-          <select
-            value={selectedDay}
-            onChange={(e) => setSelectedDay(e.target.value)}
-            className="p-2 bg-gray-800 rounded text-white"
-          >
-            {days.map((day) => (
-              <option key={day}>{day}</option>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Timetable Planner</h1>
+      <div className="overflow-x-auto max-w-full">
+        <table className="w-full text-sm bg-gray-800 border border-gray-700 rounded">
+          <thead>
+            <tr>
+              <th className="border border-gray-700 p-2 bg-gray-700">Day / Slot</th>
+              {[1, 2, 3, 4, 5, 6].map((slot) => (
+                <th key={slot} className="border border-gray-700 p-2">
+                  Slot {slot}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {daysOfWeek.map((day) => (
+              <tr key={day}>
+                <td className="border border-gray-700 p-2 font-semibold bg-gray-700">{day}</td>
+                {timetable[day]?.map((entry, index) => (
+                  <td key={index} className="border border-gray-700 p-2">
+                    <input
+                      type="text"
+                      value={entry}
+                      onChange={(e) => handleChange(day, index, e.target.value)}
+                      placeholder="--"
+                      className="w-full px-2 py-1 bg-gray-900 text-white border border-gray-600 rounded"
+                    />
+                  </td>
+                ))}
+              </tr>
             ))}
-          </select>
-          <input
-            type="text"
-            value={newEntry}
-            onChange={(e) => setNewEntry(e.target.value)}
-            placeholder="Enter class/time"
-            className="flex-1 p-2 rounded bg-gray-800"
-          />
-          <button
-            onClick={addEntry}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
-          >
-            Add
-          </button>
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          {days.map((day) => (
-            <div key={day} className="bg-gray-800 p-4 rounded shadow">
-              <h2 className="font-semibold mb-2">{day}</h2>
-              {timetable[day]?.length > 0 ? (
-                <ul className="space-y-1">
-                  {timetable[day].map((entry, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between bg-gray-700 px-3 py-1 rounded"
-                    >
-                      <span>{entry}</span>
-                      <button
-                        onClick={() => deleteEntry(day, index)}
-                        className="text-red-400 hover:text-red-600 text-sm"
-                      >
-                        Delete
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-gray-400">No entries</p>
-              )}
-            </div>
-          ))}
-        </div>
+          </tbody>
+        </table>
+        <p className="text-xs text-gray-400 mt-3">All data is saved automatically.</p>
       </div>
     </div>
   );
