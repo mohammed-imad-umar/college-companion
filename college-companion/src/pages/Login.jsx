@@ -1,73 +1,61 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const emailFromUsername = (uname) => `${uname}@collegecompanion.app`;
-
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError("");
-    const email = emailFromUsername(username);
 
-    try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
+    const storedUser = localStorage.getItem("college_user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+
+    if (parsedUser && parsedUser.username === username && parsedUser.password === password) {
+      navigate("/dashboard");
+    } else {
+      alert("Invalid username or password");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
-      <div className="max-w-md w-full bg-gray-900 p-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4 text-center">
-          {isLogin ? "Login" : "Register"}
-        </h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Username"
-            className="w-full p-2 bg-gray-800 text-white rounded"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-2 bg-gray-800 text-white rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block mb-1">Username</label>
+            <input
+              type="text"
+              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Password</label>
+            <input
+              type="password"
+              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
           >
-            {isLogin ? "Login" : "Register"}
+            Login
           </button>
         </form>
-        <p className="text-sm text-gray-400 text-center mt-4">
-          {isLogin ? "Don’t have an account?" : "Already have an account?"}{" "}
-          <button
-            className="text-blue-400 hover:underline"
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? "Sign up" : "Login"}
-          </button>
+        <p className="text-center mt-4 text-sm">
+          Don’t have an account?{" "}
+          <a href="/signup" className="text-blue-400 hover:underline">
+            Signup
+          </a>
         </p>
       </div>
     </div>
