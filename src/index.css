@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom glow effect for buttons */
+.glow-button {
+  box-shadow: 0 0 12px rgba(0, 132, 255, 0.6);
+}
+
+/* Smooth transitions for theme toggle */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Optional custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.6);
+  border-radius: 4px;
+}
