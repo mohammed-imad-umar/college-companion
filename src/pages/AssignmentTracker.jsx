@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Assignments = () => {
+const AssignmentTracker = () => {
   const [assignments, setAssignments] = useState(() => {
     const saved = localStorage.getItem("college_assignments");
     return saved ? JSON.parse(saved) : [];
@@ -70,3 +70,32 @@ const Assignments = () => {
               key={a.id}
               className={`flex justify-between items-center p-3 rounded bg-gray-800 shadow-md ${
                 a.completed ? "opacity-50 line-through" : ""
+              }`}
+            >
+              <div>
+                <p className="text-lg">{a.title}</p>
+                <p className="text-sm text-gray-400">Due: {a.dueDate}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => toggleComplete(a.id)}
+                  className="text-green-400 hover:text-green-600"
+                >
+                  {a.completed ? "Undo" : "Done"}
+                </button>
+                <button
+                  onClick={() => deleteAssignment(a.id)}
+                  className="text-red-400 hover:text-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default AssignmentTracker;
