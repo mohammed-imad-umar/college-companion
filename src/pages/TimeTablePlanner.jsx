@@ -1,103 +1,79 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-const TimetablePlanner = () => {
+// Timings from morning to evening (customize as needed)
+const periods = [
+  "08:00 - 09:00",
+  "09:00 - 10:00",
+  "10:00 - 11:00",
+  "11:00 - 12:00",
+  "12:00 - 01:00",
+  "01:00 - 02:00",
+  "02:00 - 03:00",
+  "03:00 - 04:00",
+  "04:00 - 05:00",
+];
+
+const TimeTablePlanner = () => {
   const [timetable, setTimetable] = useState(() => {
     const saved = localStorage.getItem("college_timetable");
     return saved ? JSON.parse(saved) : {};
   });
 
-  const [selectedDay, setSelectedDay] = useState("Monday");
-  const [time, setTime] = useState("");
-  const [subject, setSubject] = useState("");
+  const handleChange = (day, period, value) => {
+    const updated = {
+      ...timetable,
+      [day]: {
+        ...timetable[day],
+        [period]: value,
+      },
+    };
+    setTimetable(updated);
+  };
 
   useEffect(() => {
     localStorage.setItem("college_timetable", JSON.stringify(timetable));
   }, [timetable]);
 
-  const addEntry = () => {
-    if (!time.trim() || !subject.trim()) return;
-
-    const updatedDay = timetable[selectedDay] ? [...timetable[selectedDay]] : [];
-    updatedDay.push({ time, subject });
-
-    setTimetable({ ...timetable, [selectedDay]: updatedDay });
-    setTime("");
-    setSubject("");
-  };
-
-  const deleteEntry = (day, index) => {
-    const updated = [...timetable[day]];
-    updated.splice(index, 1);
-    setTimetable({ ...timetable, [day]: updated });
-  };
-
   return (
-    <div className="text-white p-6 max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Timetable Planner</h2>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">📅 TimeTable Planner</h1>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-4">
-        <select
-          value={selectedDay}
-          onChange={(e) => setSelectedDay(e.target.value)}
-          className="p-2 rounded bg-gray-700"
-        >
-          {daysOfWeek.map((day) => (
-            <option key={day}>{day}</option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="Time (e.g., 9:00 - 10:00)"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          className="p-2 rounded bg-gray-700 flex-1"
-        />
-        <input
-          type="text"
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          className="p-2 rounded bg-gray-700 flex-1"
-        />
-        <button
-          onClick={addEntry}
-          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-        >
-          Add
-        </button>
-      </div>
-
-      <div className="space-y-6">
-        {daysOfWeek.map((day) => (
-          <div key={day}>
-            <h3 className="font-semibold text-lg text-blue-400">{day}</h3>
-            {timetable[day] && timetable[day].length > 0 ? (
-              <ul className="pl-4">
-                {timetable[day].map((entry, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center py-1 border-b border-gray-700"
-                  >
-                    <span>{entry.time} - {entry.subject}</span>
-                    <button
-                      onClick={() => deleteEntry(day, index)}
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      ✖
-                    </button>
-                  </li>
+      <div className="overflow-x-auto">
+        <table className="w-full table-auto border border-gray-700">
+          <thead>
+            <tr className="bg-gray-800">
+              <th className="p-2 border border-gray-700">Day / Time</th>
+              {periods.map((period, idx) => (
+                <th key={idx} className="p-2 border border-gray-700 text-sm whitespace-nowrap">
+                  {period}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {days.map((day, dayIdx) => (
+              <tr key={dayIdx} className="even:bg-gray-800">
+                <td className="p-2 border border-gray-700 font-semibold">{day}</td>
+                {periods.map((period, pIdx) => (
+                  <td key={pIdx} className="border border-gray-700 p-1">
+                    <input
+                      type="text"
+                      placeholder="Subject / Task"
+                      value={timetable[day]?.[period] || ""}
+                      onChange={(e) => handleChange(day, period, e.target.value)}
+                      className="w-full bg-gray-700 p-1 rounded text-sm text-white"
+                    />
+                  </td>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-500">No entries.</p>
-            )}
-          </div>
-        ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
-export default TimetablePlanner;
+export default TimeTablePlanner;
