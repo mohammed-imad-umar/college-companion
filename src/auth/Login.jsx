@@ -1,65 +1,64 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setError("");
 
-    const storedUser = localStorage.getItem("college_user");
-    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    const storedUsername = localStorage.getItem("college_username");
+    const storedPassword = localStorage.getItem("college_password");
 
-    if (parsedUser && parsedUser.username === username && parsedUser.password === password) {
+    if (username === storedUsername && password === storedPassword) {
       navigate("/dashboard");
     } else {
-      alert("Invalid username or password");
+      setError("Invalid username or password.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
+      <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
+        {error && (
+          <p className="mb-4 text-red-500 text-sm text-center">{error}</p>
+        )}
         <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block mb-1">Username</label>
-            <input
-              type="text"
-              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Password</label>
-            <input
-              type="password"
-              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Username"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+            className="w-full glow-button bg-blue-600 hover:bg-blue-700 text-white py-3 rounded"
           >
             Login
           </button>
         </form>
-        <p className="text-center mt-4 text-sm">
-          Don’t have an account?{" "}
-          <a href="/signup" className="text-blue-400 hover:underline">
-            Signup
+        <p className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <a href="/signup" className="text-green-400 hover:underline">
+            Sign up
           </a>
         </p>
       </div>
     </div>
   );
-};
-
-export default Login;
+}
