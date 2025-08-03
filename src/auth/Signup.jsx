@@ -1,10 +1,9 @@
-// src/auth/Signup.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/firebase";
+import { auth } from "../firebase"; // ✅ Correct import
 
-const Signup = () => {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,46 +15,50 @@ const Signup = () => {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/"); // ✅ Redirect to Login page after signup
+      navigate("/"); // ✅ Redirect to login after signup
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <form onSubmit={handleSignup} className="bg-gray-800 p-8 rounded shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center">Create Account</h2>
-
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600"
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full p-2 mb-6 rounded bg-gray-700 border border-gray-600"
-        />
-
-        <button
-          type="submit"
-          className="glow-button bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded"
-        >
-          Sign Up
-        </button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
+      <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center">Sign Up</h2>
+        {error && (
+          <p className="mb-4 text-red-500 text-sm text-center">{error}</p>
+        )}
+        <form onSubmit={handleSignup} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="submit"
+            className="w-full glow-button bg-blue-600 hover:bg-blue-700 text-white py-3 rounded"
+          >
+            Create Account
+          </button>
+        </form>
+        <p className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <a href="/" className="text-blue-400 hover:underline">
+            Login
+          </a>
+        </p>
+      </div>
     </div>
   );
-};
-
-export default Signup;
+}
