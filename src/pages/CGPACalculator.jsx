@@ -1,121 +1,132 @@
+// src/pages/CGPACalculator.jsx
 import React, { useState } from "react";
 
+const gradeToPoint = {
+  O: 10,
+  "A+": 9,
+  A: 8,
+  "B+": 7,
+  B: 6,
+  C: 5,
+  F: 0,
+};
+
 const CGPACalculator = () => {
-  // GPA Calculator State
-  const [subjects, setSubjects] = useState([{ credits: "" }]);
-  const [gpaResult, setGpaResult] = useState(null);
+  const [subjects, setSubjects] = useState([
+    { grade: "O", credit: "" },
+  ]);
+  const [gpa, setGPA] = useState(null);
 
-  // CGPA Calculator State
-  const [sgpas, setSgpas] = useState([{ sgpa: "" }]);
-  const [cgpaResult, setCgpaResult] = useState(null);
+  const [sgpas, setSgpas] = useState([""]);
+  const [cgpa, setCGPA] = useState(null);
 
-  const handleGPAChange = (index, value) => {
+  const addSubject = () => {
+    setSubjects([...subjects, { grade: "O", credit: "" }]);
+  };
+
+  const updateSubject = (index, field, value) => {
     const updated = [...subjects];
-    updated[index].credits = value;
+    updated[index][field] = value;
     setSubjects(updated);
   };
 
-  const addSubject = () => {
-    setSubjects([...subjects, { credits: "" }]);
-  };
-
   const calculateGPA = () => {
-    const totalCredits = subjects.reduce(
-      (acc, sub) => acc + parseFloat(sub.credits || 0),
-      0
-    );
-    const gpa = totalCredits / subjects.length || 0;
-    setGpaResult(gpa.toFixed(2));
+    let totalCredits = 0;
+    let totalPoints = 0;
+
+    for (let s of subjects) {
+      const credit = parseFloat(s.credit);
+      const point = gradeToPoint[s.grade];
+
+      if (!isNaN(credit) && point !== undefined) {
+        totalCredits += credit;
+        totalPoints += point * credit;
+      }
+    }
+
+    const gpaResult = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
+    setGPA(gpaResult);
   };
 
-  const handleSGPAChange = (index, value) => {
+  const updateSGPA = (index, value) => {
     const updated = [...sgpas];
-    updated[index].sgpa = value;
+    updated[index] = value;
     setSgpas(updated);
   };
 
   const addSGPA = () => {
-    setSgpas([...sgpas, { sgpa: "" }]);
+    setSgpas([...sgpas, ""]);
   };
 
   const calculateCGPA = () => {
-    const total = sgpas.reduce((acc, s) => acc + parseFloat(s.sgpa || 0), 0);
-    const cgpa = total / sgpas.length || 0;
-    setCgpaResult(cgpa.toFixed(2));
+    const validSGPAs = sgpas.map(Number).filter((s) => !isNaN(s));
+    const total = validSGPAs.reduce((acc, curr) => acc + curr, 0);
+    const result = validSGPAs.length > 0 ? (total / validSGPAs.length).toFixed(2) : 0;
+    setCGPA(result);
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">CGPA Calculator</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">GPA & CGPA Calculator</h1>
 
-      {/* GPA Section */}
-      <div className="bg-gray-800 p-6 rounded mb-8">
-        <h2 className="text-xl font-semibold mb-4">GPA (Subject-wise)</h2>
-
-        {subjects.map((sub, index) => (
-          <input
-            key={index}
-            type="number"
-            placeholder={`Subject ${index + 1} Credits`}
-            value={sub.credits}
-            onChange={(e) => handleGPAChange(index, e.target.value)}
-            className="w-full p-2 mb-3 rounded bg-gray-700 border border-gray-600"
-          />
+      {/* GPA Calculator */}
+      <div className="bg-gray-800 p-6 rounded-xl shadow-md mb-10">
+        <h2 className="text-xl font-semibold mb-4">GPA Calculator</h2>
+        {subjects.map((subject, index) => (
+          <div key={index} className="flex gap-4 mb-2">
+            <select
+              value={subject.grade}
+              onChange={(e) => updateSubject(index, "grade", e.target.value)}
+              className="p-2 rounded bg-gray-700 border border-gray-600 text-white"
+            >
+              {Object.keys(gradeToPoint).map((grade) => (
+                <option key={grade} value={grade}>
+                  {grade}
+                </option>
+              ))}
+            </select>
+            <input
+              type="number"
+              placeholder="Credit"
+              value={subject.credit}
+              onChange={(e) => updateSubject(index, "credit", e.target.value)}
+              className="p-2 rounded bg-gray-700 border border-gray-600 w-24"
+            />
+          </div>
         ))}
-
-        <div className="flex gap-3">
-          <button
-            onClick={addSubject}
-            className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
-          >
-            + Add Subject
+        <div className="flex gap-4 mt-4">
+          <button onClick={addSubject} className="glow-button bg-blue-600 px-4 py-2 rounded">
+            Add Subject
           </button>
-          <button
-            onClick={calculateGPA}
-            className="glow-button bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
+          <button onClick={calculateGPA} className="glow-button bg-green-600 px-4 py-2 rounded">
             Calculate GPA
           </button>
         </div>
-
-        {gpaResult && (
-          <p className="mt-4 text-lg font-semibold">GPA: {gpaResult}</p>
-        )}
+        {gpa !== null && <p className="mt-4 text-lg">Your GPA: <strong>{gpa}</strong></p>}
       </div>
 
-      {/* CGPA Section */}
-      <div className="bg-gray-800 p-6 rounded">
-        <h2 className="text-xl font-semibold mb-4">CGPA (Semester-wise)</h2>
-
-        {sgpas.map((s, index) => (
+      {/* CGPA Calculator */}
+      <div className="bg-gray-800 p-6 rounded-xl shadow-md">
+        <h2 className="text-xl font-semibold mb-4">CGPA Calculator</h2>
+        {sgpas.map((sgpa, index) => (
           <input
             key={index}
             type="number"
             placeholder={`SGPA Sem ${index + 1}`}
-            value={s.sgpa}
-            onChange={(e) => handleSGPAChange(index, e.target.value)}
-            className="w-full p-2 mb-3 rounded bg-gray-700 border border-gray-600"
+            value={sgpa}
+            onChange={(e) => updateSGPA(index, e.target.value)}
+            className="w-full mb-2 p-2 rounded bg-gray-700 border border-gray-600"
           />
         ))}
-
-        <div className="flex gap-3">
-          <button
-            onClick={addSGPA}
-            className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
-          >
-            + Add SGPA
+        <div className="flex gap-4 mt-4">
+          <button onClick={addSGPA} className="glow-button bg-blue-600 px-4 py-2 rounded">
+            Add SGPA
           </button>
-          <button
-            onClick={calculateCGPA}
-            className="glow-button bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-          >
+          <button onClick={calculateCGPA} className="glow-button bg-green-600 px-4 py-2 rounded">
             Calculate CGPA
           </button>
         </div>
-
-        {cgpaResult && (
-          <p className="mt-4 text-lg font-semibold">CGPA: {cgpaResult}</p>
-        )}
+        {cgpa !== null && <p className="mt-4 text-lg">Your CGPA: <strong>{cgpa}</strong></p>}
       </div>
     </div>
   );
