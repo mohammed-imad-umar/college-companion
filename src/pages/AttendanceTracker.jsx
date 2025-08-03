@@ -1,114 +1,108 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-const AttendanceTracker = () => {
-  const [subjects, setSubjects] = useState(() => {
-    const stored = localStorage.getItem("attendance_subjects");
+const Attendance = () => {
+  const [attendanceData, setAttendanceData] = useState(() => {
+    const stored = localStorage.getItem("attendance_records");
     return stored ? JSON.parse(stored) : [];
   });
 
   const [subject, setSubject] = useState("");
-  const [present, setPresent] = useState("");
+  const [attended, setAttended] = useState("");
   const [total, setTotal] = useState("");
 
-  useEffect(() => {
-    localStorage.setItem("attendance_subjects", JSON.stringify(subjects));
-  }, [subjects]);
+  const addRecord = () => {
+    if (!subject || !attended || !total || isNaN(attended) || isNaN(total)) return;
 
-  const addSubject = () => {
-    if (!subject.trim() || !present || !total) return;
-    setSubjects([
-      {
-        id: Date.now(),
-        subject,
-        present: parseInt(present),
-        total: parseInt(total),
-      },
-      ...subjects,
-    ]);
+    const newEntry = {
+      subject,
+      attended: parseInt(attended),
+      total: parseInt(total),
+    };
+
+    const updated = [...attendanceData, newEntry];
+    setAttendanceData(updated);
+    localStorage.setItem("attendance_records", JSON.stringify(updated));
     setSubject("");
-    setPresent("");
+    setAttended("");
     setTotal("");
   };
 
-  const deleteSubject = (id) => {
-    setSubjects(subjects.filter((s) => s.id !== id));
+  const deleteRecord = (index) => {
+    const updated = attendanceData.filter((_, i) => i !== index);
+    setAttendanceData(updated);
+    localStorage.setItem("attendance_records", JSON.stringify(updated));
   };
 
-  const calculatePercentage = (p, t) => {
-    if (t === 0) return "0%";
-    return `${((p / t) * 100).toFixed(1)}%`;
+  const calculatePercentage = (attended, total) => {
+    return total > 0 ? ((attended / total) * 100).toFixed(1) : "0.0";
   };
 
   return (
-    <div className="text-white p-6 max-w-3xl mx-auto bg-gray-900 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Attendance Tracker</h2>
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">Attendance Tracker</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+      <div className="flex flex-col gap-2 mb-6 max-w-xl mx-auto">
         <input
           type="text"
           placeholder="Subject"
+          className="p-2 rounded bg-gray-800 border border-gray-700"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="p-2 rounded bg-gray-700"
         />
         <input
           type="number"
-          placeholder="Present"
-          value={present}
-          onChange={(e) => setPresent(e.target.value)}
-          className="p-2 rounded bg-gray-700"
+          placeholder="Classes Attended"
+          className="p-2 rounded bg-gray-800 border border-gray-700"
+          value={attended}
+          onChange={(e) => setAttended(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Total"
+          placeholder="Total Classes"
+          className="p-2 rounded bg-gray-800 border border-gray-700"
           value={total}
           onChange={(e) => setTotal(e.target.value)}
-          className="p-2 rounded bg-gray-700"
         />
+        <button
+          onClick={addRecord}
+          className="glow-button bg-purple-600 hover:bg-purple-700 text-white py-2 rounded"
+        >
+          Add Record
+        </button>
       </div>
 
-      <button
-        onClick={addSubject}
-        className="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded mb-6"
-      >
-        Add Subject
-      </button>
-
-      {subjects.length === 0 ? (
-        <p className="text-gray-400 text-center">No attendance data yet.</p>
-      ) : (
-        <table className="w-full text-left border border-gray-700">
-          <thead>
-            <tr className="bg-gray-800">
-              <th className="p-2">Subject</th>
-              <th className="p-2">Present</th>
-              <th className="p-2">Total</th>
-              <th className="p-2">%</th>
-              <th className="p-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subjects.map((s) => (
-              <tr key={s.id} className="border-t border-gray-700">
-                <td className="p-2">{s.subject}</td>
-                <td className="p-2">{s.present}</td>
-                <td className="p-2">{s.total}</td>
-                <td className="p-2">{calculatePercentage(s.present, s.total)}</td>
-                <td className="p-2">
-                  <button
-                    onClick={() => deleteSubject(s.id)}
-                    className="text-red-400 hover:text-red-600"
-                  >
-                    ✖
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <div className="max-w-xl mx-auto space-y-4">
+        {attendanceData.map((entry, index) => (
+          <div
+            key={index}
+            className="bg-gray-800 p-4 rounded shadow flex justify-between items-center"
+          >
+            <div>
+              <h3 className="text-lg font-semibold">{entry.subject}</h3>
+              <p className="text-sm text-gray-300">
+                Attended: {entry.attended} / {entry.total} classes
+              </p>
+              <p
+                className={`text-sm ${
+                  calculatePercentage(entry.attended, entry.total) >= 75
+                    ? "text-green-400"
+                    : "text-red-400"
+                }`}
+              >
+                Attendance: {calculatePercentage(entry.attended, entry.total)}%
+              </p>
+            </div>
+            <button
+              onClick={() => deleteRecord(index)}
+              className="text-red-400 hover:text-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default AttendanceTracker;
+export default Attendance;
