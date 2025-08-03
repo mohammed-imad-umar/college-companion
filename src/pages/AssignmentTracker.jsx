@@ -5,6 +5,7 @@ const AssignmentTracker = () => {
     const saved = localStorage.getItem("college_assignments");
     return saved ? JSON.parse(saved) : [];
   });
+
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
 
@@ -13,33 +14,34 @@ const AssignmentTracker = () => {
   }, [assignments]);
 
   const addAssignment = () => {
-    if (!title || !dueDate) return;
-    const newAssignment = {
-      id: Date.now(),
-      title,
-      dueDate,
-      completed: false,
-    };
-    setAssignments([...assignments, newAssignment]);
-    setTitle("");
-    setDueDate("");
+    if (title && dueDate) {
+      const newAssignment = {
+        id: Date.now(),
+        title,
+        dueDate,
+        completed: false,
+      };
+      setAssignments([...assignments, newAssignment]);
+      setTitle("");
+      setDueDate("");
+    }
   };
 
   const toggleComplete = (id) => {
-    setAssignments(
-      assignments.map((a) =>
+    setAssignments((prev) =>
+      prev.map((a) =>
         a.id === id ? { ...a, completed: !a.completed } : a
       )
     );
   };
 
   const deleteAssignment = (id) => {
-    setAssignments(assignments.filter((a) => a.id !== id));
+    setAssignments((prev) => prev.filter((a) => a.id !== id));
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-900 text-white">
-      <h1 className="text-3xl font-bold mb-6 text-center">📚 Assignment Tracker</h1>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">Assignment Tracker</h1>
 
       <div className="max-w-2xl mx-auto space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
@@ -48,13 +50,13 @@ const AssignmentTracker = () => {
             placeholder="Assignment Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 border border-gray-700"
+            className="w-full p-2 rounded bg-gray-800 border border-gray-600"
           />
           <input
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 border border-gray-700"
+            className="w-full p-2 rounded bg-gray-800 border border-gray-600"
           />
           <button
             onClick={addAssignment}
@@ -68,7 +70,7 @@ const AssignmentTracker = () => {
           {assignments.map((a) => (
             <li
               key={a.id}
-              className={`flex justify-between items-center p-3 rounded bg-gray-800 transition shadow-md ${
+              className={`flex justify-between items-center p-3 rounded bg-gray-800 shadow-md ${
                 a.completed ? "opacity-50 line-through" : ""
               }`}
             >
@@ -79,13 +81,13 @@ const AssignmentTracker = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => toggleComplete(a.id)}
-                  className="text-xs bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-1 rounded"
                 >
                   {a.completed ? "Undo" : "Done"}
                 </button>
                 <button
                   onClick={() => deleteAssignment(a.id)}
-                  className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
+                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
                 >
                   Delete
                 </button>
