@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
@@ -21,7 +20,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <Router>
-        <Suspense fallback={<Loader />}> {/* <-- Official loading screen */}
+        <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
