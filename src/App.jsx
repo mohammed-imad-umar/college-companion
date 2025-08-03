@@ -1,8 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+// Auth
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
+
+// Pages & Features
 import Dashboard from "./pages/Dashboard";
 import CGPACalculator from "./pages/CGPACalculator";
 import AssignmentTracker from "./pages/AssignmentTracker";
@@ -12,6 +15,8 @@ import SyllabusVault from "./pages/SyllabusVault";
 import AttendanceTracker from "./pages/AttendanceTracker";
 import TimeTablePlanner from "./pages/TimeTablePlanner";
 import StickyNotes from "./pages/StickyNotes";
+
+// Footer
 import Footer from "./components/Footer";
 
 export default function App() {
