@@ -1,83 +1,76 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-const SyllabusVault = () => {
-  const [syllabusItems, setSyllabusItems] = useState(() => {
-    const stored = localStorage.getItem("syllabus_items");
+const Syllabus = () => {
+  const [subjects, setSubjects] = useState(() => {
+    const stored = localStorage.getItem("syllabus_list");
     return stored ? JSON.parse(stored) : [];
   });
 
-  const [subject, setSubject] = useState("");
-  const [details, setDetails] = useState("");
+  const [newSubject, setNewSubject] = useState("");
+  const [newDetails, setNewDetails] = useState("");
 
-  useEffect(() => {
-    localStorage.setItem("syllabus_items", JSON.stringify(syllabusItems));
-  }, [syllabusItems]);
-
-  const addSyllabus = () => {
-    if (!subject.trim() || !details.trim()) return;
-    setSyllabusItems([
-      { id: Date.now(), subject, details },
-      ...syllabusItems,
-    ]);
-    setSubject("");
-    setDetails("");
+  const addSubject = () => {
+    if (!newSubject.trim() || !newDetails.trim()) return;
+    const updated = [...subjects, { subject: newSubject, details: newDetails }];
+    setSubjects(updated);
+    localStorage.setItem("syllabus_list", JSON.stringify(updated));
+    setNewSubject("");
+    setNewDetails("");
   };
 
-  const deleteSyllabus = (id) => {
-    setSyllabusItems(syllabusItems.filter((item) => item.id !== id));
+  const removeSubject = (index) => {
+    const updated = subjects.filter((_, i) => i !== index);
+    setSubjects(updated);
+    localStorage.setItem("syllabus_list", JSON.stringify(updated));
   };
 
   return (
-    <div className="text-white p-6 max-w-3xl mx-auto bg-gray-900 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Syllabus Vault</h2>
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">Syllabus Vault</h1>
 
-      <div className="space-y-2 mb-4">
+      <div className="flex flex-col gap-2 mb-4 max-w-xl mx-auto">
         <input
           type="text"
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          className="w-full p-2 rounded bg-gray-700"
+          placeholder="Subject Name"
+          className="p-2 rounded bg-gray-800 border border-gray-700 w-full"
+          value={newSubject}
+          onChange={(e) => setNewSubject(e.target.value)}
         />
         <textarea
-          placeholder="Syllabus details"
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
-          className="w-full p-2 rounded bg-gray-700 h-24"
+          placeholder="Enter syllabus details"
+          className="p-2 rounded bg-gray-800 border border-gray-700 w-full h-24"
+          value={newDetails}
+          onChange={(e) => setNewDetails(e.target.value)}
         />
         <button
-          onClick={addSyllabus}
-          className="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+          onClick={addSubject}
+          className="glow-button bg-green-600 hover:bg-green-700 text-white py-2 rounded"
         >
           Add Syllabus
         </button>
       </div>
 
-      {syllabusItems.length === 0 ? (
-        <p className="text-gray-400 text-center">No syllabus saved yet.</p>
-      ) : (
-        <ul className="space-y-3">
-          {syllabusItems.map((item) => (
-            <li
-              key={item.id}
-              className="bg-gray-800 p-3 rounded flex flex-col sm:flex-row justify-between"
+      <div className="space-y-4 max-w-xl mx-auto">
+        {subjects.map((item, index) => (
+          <div
+            key={index}
+            className="bg-gray-800 p-4 rounded-lg shadow flex justify-between items-start"
+          >
+            <div>
+              <h3 className="text-lg font-semibold text-blue-400">{item.subject}</h3>
+              <p className="text-sm text-gray-300 mt-1 whitespace-pre-wrap">{item.details}</p>
+            </div>
+            <button
+              onClick={() => removeSubject(index)}
+              className="text-red-400 hover:text-red-600"
             >
-              <div>
-                <p className="font-semibold">{item.subject}</p>
-                <p className="text-gray-300">{item.details}</p>
-              </div>
-              <button
-                onClick={() => deleteSyllabus(item.id)}
-                className="text-red-400 hover:text-red-600 mt-2 sm:mt-0 sm:ml-4 self-end"
-              >
-                ✖
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default SyllabusVault;
+export default Syllabus;
