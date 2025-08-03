@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
@@ -18,14 +17,25 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"} p-6 transition-colors duration-300`}>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Welcome to College Companion</h1>
+
         <button
           onClick={toggleTheme}
-          className="glow-button px-4 py-2 rounded bg-blue-600 hover:bg-blue-700"
+          className="flex items-center gap-2 glow-button px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 shadow-lg transition duration-300"
         >
-          Toggle {darkMode ? "Light" : "Dark"} Mode
+          {darkMode ? (
+            <>
+              <span>🌞</span>
+              <span className="font-semibold">Light Mode</span>
+            </>
+          ) : (
+            <>
+              <span>🌙</span>
+              <span className="font-semibold">Dark Mode</span>
+            </>
+          )}
         </button>
       </div>
 
