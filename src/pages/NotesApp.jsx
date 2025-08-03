@@ -2,24 +2,25 @@ import React, { useState, useEffect } from "react";
 
 const NotesApp = () => {
   const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem("college_notes");
-    return saved ? JSON.parse(saved) : [];
+    const stored = localStorage.getItem("college_notes");
+    return stored ? JSON.parse(stored) : [];
   });
 
-  const [input, setInput] = useState("");
+  const [newNote, setNewNote] = useState("");
 
   useEffect(() => {
     localStorage.setItem("college_notes", JSON.stringify(notes));
   }, [notes]);
 
   const addNote = () => {
-    if (input.trim() === "") return;
-    const newNote = {
-      id: Date.now(),
-      text: input,
-    };
-    setNotes([newNote, ...notes]);
-    setInput("");
+    if (newNote.trim()) {
+      const note = {
+        id: Date.now(),
+        text: newNote,
+      };
+      setNotes([note, ...notes]);
+      setNewNote("");
+    }
   };
 
   const deleteNote = (id) => {
@@ -28,35 +29,35 @@ const NotesApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Quick Notes</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Notes</h1>
 
-      <div className="max-w-3xl mx-auto">
-        <div className="flex gap-4 mb-6">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your note..."
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex gap-4">
+          <textarea
+            rows={3}
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            placeholder="Write your note..."
             className="w-full p-3 rounded bg-gray-800 border border-gray-600"
           />
           <button
             onClick={addNote}
-            className="glow-button bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            className="glow-button bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded h-fit"
           >
             Add
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {notes.map((note) => (
             <div
               key={note.id}
-              className="bg-gray-800 p-4 rounded shadow-md relative"
+              className="bg-gray-800 rounded p-4 shadow-md flex justify-between items-start"
             >
-              <p>{note.text}</p>
+              <p className="whitespace-pre-wrap">{note.text}</p>
               <button
                 onClick={() => deleteNote(note.id)}
-                className="absolute top-2 right-2 text-red-400 hover:text-red-600"
+                className="text-red-500 hover:text-red-700 ml-4 font-bold"
               >
                 ✕
               </button>
