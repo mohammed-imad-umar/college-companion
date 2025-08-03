@@ -13,24 +13,24 @@ const AssignmentTracker = () => {
   }, [assignments]);
 
   const addAssignment = () => {
-    if (title.trim() && dueDate.trim()) {
-      const newAssignment = {
-        id: Date.now(),
-        title,
-        dueDate,
-        completed: false,
-      };
-      setAssignments([...assignments, newAssignment]);
-      setTitle("");
-      setDueDate("");
-    }
+    if (!title || !dueDate) return;
+    const newAssignment = {
+      id: Date.now(),
+      title,
+      dueDate,
+      completed: false,
+    };
+    setAssignments([...assignments, newAssignment]);
+    setTitle("");
+    setDueDate("");
   };
 
   const toggleComplete = (id) => {
-    const updated = assignments.map((a) =>
-      a.id === id ? { ...a, completed: !a.completed } : a
+    setAssignments(
+      assignments.map((a) =>
+        a.id === id ? { ...a, completed: !a.completed } : a
+      )
     );
-    setAssignments(updated);
   };
 
   const deleteAssignment = (id) => {
@@ -38,8 +38,8 @@ const AssignmentTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Assignment Tracker</h1>
+    <div className="min-h-screen p-6 bg-gray-900 text-white">
+      <h1 className="text-3xl font-bold mb-6 text-center">📚 Assignment Tracker</h1>
 
       <div className="max-w-2xl mx-auto space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
@@ -48,13 +48,13 @@ const AssignmentTracker = () => {
             placeholder="Assignment Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 border border-gray-600"
+            className="w-full p-2 rounded bg-gray-800 border border-gray-700"
           />
           <input
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 border border-gray-600"
+            className="w-full p-2 rounded bg-gray-800 border border-gray-700"
           />
           <button
             onClick={addAssignment}
@@ -68,24 +68,24 @@ const AssignmentTracker = () => {
           {assignments.map((a) => (
             <li
               key={a.id}
-              className={`flex justify-between items-center p-3 rounded bg-gray-800 shadow-md ${
+              className={`flex justify-between items-center p-3 rounded bg-gray-800 transition shadow-md ${
                 a.completed ? "opacity-50 line-through" : ""
               }`}
             >
               <div>
-                <p className="text-lg">{a.title}</p>
+                <h3 className="font-semibold">{a.title}</h3>
                 <p className="text-sm text-gray-400">Due: {a.dueDate}</p>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => toggleComplete(a.id)}
-                  className="text-green-400 hover:text-green-600"
+                  className="text-xs bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
                 >
                   {a.completed ? "Undo" : "Done"}
                 </button>
                 <button
                   onClick={() => deleteAssignment(a.id)}
-                  className="text-red-400 hover:text-red-600"
+                  className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
                 >
                   Delete
                 </button>
