@@ -2,78 +2,86 @@ import React, { useState, useEffect } from "react";
 
 const ClassLinks = () => {
   const [links, setLinks] = useState(() => {
-    const stored = localStorage.getItem("class_links");
+    const stored = localStorage.getItem("college_class_links");
     return stored ? JSON.parse(stored) : [];
   });
 
-  const [newTitle, setNewTitle] = useState("");
-  const [newURL, setNewURL] = useState("");
+  const [title, setTitle] = useState("");
+  const [url, setURL] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("college_class_links", JSON.stringify(links));
+  }, [links]);
 
   const addLink = () => {
-    if (!newTitle.trim() || !newURL.trim()) return;
-    const updated = [...links, { title: newTitle, url: newURL }];
-    setLinks(updated);
-    localStorage.setItem("class_links", JSON.stringify(updated));
-    setNewTitle("");
-    setNewURL("");
+    if (title.trim() && url.trim()) {
+      const newLink = {
+        id: Date.now(),
+        title,
+        url,
+      };
+      setLinks([...links, newLink]);
+      setTitle("");
+      setURL("");
+    }
   };
 
-  const removeLink = (index) => {
-    const updated = links.filter((_, i) => i !== index);
-    setLinks(updated);
-    localStorage.setItem("class_links", JSON.stringify(updated));
+  const deleteLink = (id) => {
+    setLinks(links.filter((l) => l.id !== id));
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Class Links</h1>
 
-      <div className="flex flex-col sm:flex-row gap-2 mb-4 max-w-xl mx-auto">
-        <input
-          type="text"
-          placeholder="Title"
-          className="p-2 rounded bg-gray-800 border border-gray-700 w-full"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-        />
-        <input
-          type="url"
-          placeholder="URL"
-          className="p-2 rounded bg-gray-800 border border-gray-700 w-full"
-          value={newURL}
-          onChange={(e) => setNewURL(e.target.value)}
-        />
-        <button
-          onClick={addLink}
-          className="glow-button bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-        >
-          Add
-        </button>
-      </div>
-
-      <ul className="space-y-4 max-w-xl mx-auto">
-        {links.map((link, index) => (
-          <li
-            key={index}
-            className="bg-gray-800 p-4 rounded-lg flex items-center justify-between"
+      <div className="max-w-2xl mx-auto space-y-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <input
+            type="text"
+            placeholder="Title (e.g., DSA Class)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 border border-gray-600"
+          />
+          <input
+            type="url"
+            placeholder="https://classlink.com"
+            value={url}
+            onChange={(e) => setURL(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 border border-gray-600"
+          />
+          <button
+            onClick={addLink}
+            className="glow-button bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            <a
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline"
+            Add
+          </button>
+        </div>
+
+        <ul className="space-y-3">
+          {links.map((link) => (
+            <li
+              key={link.id}
+              className="flex justify-between items-center p-3 rounded bg-gray-800 shadow-md"
             >
-              {link.title}
-            </a>
-            <button
-              onClick={() => removeLink(index)}
-              className="text-red-500 hover:text-red-700"
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:underline"
+              >
+                {link.title}
+              </a>
+              <button
+                onClick={() => deleteLink(link.id)}
+                className="text-red-500 hover:text-red-700 font-semibold"
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
