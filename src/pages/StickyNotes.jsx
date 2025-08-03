@@ -1,65 +1,63 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 const StickyNotes = () => {
   const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem("sticky_notes");
-    return saved ? JSON.parse(saved) : [];
+    const stored = localStorage.getItem("college_notes");
+    return stored ? JSON.parse(stored) : [];
   });
   const [newNote, setNewNote] = useState("");
 
-  useEffect(() => {
-    localStorage.setItem("sticky_notes", JSON.stringify(notes));
-  }, [notes]);
-
   const addNote = () => {
     if (!newNote.trim()) return;
-    const note = {
-      id: Date.now(),
-      text: newNote,
-    };
-    setNotes([note, ...notes]);
+    const updated = [...notes, newNote.trim()];
+    setNotes(updated);
+    localStorage.setItem("college_notes", JSON.stringify(updated));
     setNewNote("");
   };
 
-  const deleteNote = (id) => {
-    setNotes(notes.filter((note) => note.id !== id));
+  const deleteNote = (index) => {
+    const updated = notes.filter((_, i) => i !== index);
+    setNotes(updated);
+    localStorage.setItem("college_notes", JSON.stringify(updated));
   };
 
   return (
-    <div className="text-white p-6 max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Sticky Notes</h2>
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <h1 className="text-3xl font-bold text-center mb-6">Sticky Notes</h1>
 
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Write your note..."
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          className="flex-grow p-2 rounded bg-gray-700"
-        />
-        <button
-          onClick={addNote}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-4 py-2 rounded"
-        >
-          Add
-        </button>
-      </div>
-
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className="bg-yellow-200 text-black p-4 rounded-lg shadow-md relative break-words min-h-[100px]"
+      <div className="max-w-2xl mx-auto space-y-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Write a note..."
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
+          />
+          <button
+            onClick={addNote}
+            className="glow-button bg-yellow-500 hover:bg-yellow-600 text-black px-4 rounded"
           >
-            <button
-              onClick={() => deleteNote(note.id)}
-              className="absolute top-1 right-2 text-red-600 hover:text-red-800 text-sm"
+            Add
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {notes.map((note, index) => (
+            <div
+              key={index}
+              className="bg-yellow-200 text-black p-4 rounded shadow-md relative"
             >
-              ✖
-            </button>
-            {note.text}
-          </div>
-        ))}
+              <p>{note}</p>
+              <button
+                onClick={() => deleteNote(index)}
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
