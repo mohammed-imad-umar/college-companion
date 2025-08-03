@@ -1,24 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase"; // ✅ Correct import
 
 export default function Signup() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
+  const handleSignup = (e) => {
     e.preventDefault();
     setError("");
 
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/"); // ✅ Redirect to login after signup
-    } catch (err) {
-      setError(err.message);
+    if (!username || !password) {
+      setError("Please enter both username and password.");
+      return;
     }
+
+    // Save to localStorage (mock signup)
+    localStorage.setItem("college_username", username);
+    localStorage.setItem("college_password", password);
+    navigate("/"); // Redirect to login
   };
 
   return (
@@ -30,11 +31,11 @@ export default function Signup() {
         )}
         <form onSubmit={handleSignup} className="space-y-4">
           <input
-            type="email"
-            placeholder="Email"
+            type="text"
+            placeholder="Username"
             className="w-full p-3 rounded bg-gray-800 border border-gray-700"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
           <input
@@ -47,7 +48,7 @@ export default function Signup() {
           />
           <button
             type="submit"
-            className="w-full glow-button bg-blue-600 hover:bg-blue-700 text-white py-3 rounded"
+            className="w-full glow-button bg-green-600 hover:bg-green-700 text-white py-3 rounded"
           >
             Create Account
           </button>
