@@ -1,91 +1,120 @@
 import React, { useState } from "react";
 
 const CGPACalculator = () => {
-  const [semesters, setSemesters] = useState([{ sgpa: "", credits: "" }]);
-  const [cgpa, setCGPA] = useState(null);
+  // GPA Calculator State
+  const [subjects, setSubjects] = useState([{ credits: "" }]);
+  const [gpaResult, setGpaResult] = useState(null);
 
-  const handleChange = (index, field, value) => {
-    const updated = [...semesters];
-    updated[index][field] = value;
-    setSemesters(updated);
+  // CGPA Calculator State
+  const [sgpas, setSgpas] = useState([{ sgpa: "" }]);
+  const [cgpaResult, setCgpaResult] = useState(null);
+
+  const handleGPAChange = (index, value) => {
+    const updated = [...subjects];
+    updated[index].credits = value;
+    setSubjects(updated);
   };
 
-  const addSemester = () => {
-    setSemesters([...semesters, { sgpa: "", credits: "" }]);
+  const addSubject = () => {
+    setSubjects([...subjects, { credits: "" }]);
+  };
+
+  const calculateGPA = () => {
+    const totalCredits = subjects.reduce(
+      (acc, sub) => acc + parseFloat(sub.credits || 0),
+      0
+    );
+    const gpa = totalCredits / subjects.length || 0;
+    setGpaResult(gpa.toFixed(2));
+  };
+
+  const handleSGPAChange = (index, value) => {
+    const updated = [...sgpas];
+    updated[index].sgpa = value;
+    setSgpas(updated);
+  };
+
+  const addSGPA = () => {
+    setSgpas([...sgpas, { sgpa: "" }]);
   };
 
   const calculateCGPA = () => {
-    let totalGradePoints = 0;
-    let totalCredits = 0;
-
-    semesters.forEach(({ sgpa, credits }) => {
-      const sgpaFloat = parseFloat(sgpa);
-      const creditFloat = parseFloat(credits);
-      if (!isNaN(sgpaFloat) && !isNaN(creditFloat)) {
-        totalGradePoints += sgpaFloat * creditFloat;
-        totalCredits += creditFloat;
-      }
-    });
-
-    if (totalCredits === 0) {
-      setCGPA("Invalid Input");
-    } else {
-      const finalCGPA = (totalGradePoints / totalCredits).toFixed(2);
-      setCGPA(finalCGPA);
-    }
+    const total = sgpas.reduce((acc, s) => acc + parseFloat(s.sgpa || 0), 0);
+    const cgpa = total / sgpas.length || 0;
+    setCgpaResult(cgpa.toFixed(2));
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">CGPA Calculator</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">CGPA Calculator</h1>
 
-      <div className="max-w-3xl mx-auto space-y-4">
-        {semesters.map((sem, index) => (
-          <div key={index} className="flex gap-4 items-center">
-            <input
-              type="number"
-              step="0.01"
-              placeholder={`SGPA Sem ${index + 1}`}
-              value={sem.sgpa}
-              onChange={(e) =>
-                handleChange(index, "sgpa", e.target.value)
-              }
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
-            />
-            <input
-              type="number"
-              placeholder="Credits"
-              value={sem.credits}
-              onChange={(e) =>
-                handleChange(index, "credits", e.target.value)
-              }
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
-            />
-          </div>
+      {/* GPA Section */}
+      <div className="bg-gray-800 p-6 rounded mb-8">
+        <h2 className="text-xl font-semibold mb-4">GPA (Subject-wise)</h2>
+
+        {subjects.map((sub, index) => (
+          <input
+            key={index}
+            type="number"
+            placeholder={`Subject ${index + 1} Credits`}
+            value={sub.credits}
+            onChange={(e) => handleGPAChange(index, e.target.value)}
+            className="w-full p-2 mb-3 rounded bg-gray-700 border border-gray-600"
+          />
         ))}
 
-        <div className="flex justify-between mt-4">
+        <div className="flex gap-3">
           <button
-            onClick={addSemester}
-            className="glow-button bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+            onClick={addSubject}
+            className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
           >
-            + Add Semester
+            + Add Subject
+          </button>
+          <button
+            onClick={calculateGPA}
+            className="glow-button bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Calculate GPA
+          </button>
+        </div>
+
+        {gpaResult && (
+          <p className="mt-4 text-lg font-semibold">GPA: {gpaResult}</p>
+        )}
+      </div>
+
+      {/* CGPA Section */}
+      <div className="bg-gray-800 p-6 rounded">
+        <h2 className="text-xl font-semibold mb-4">CGPA (Semester-wise)</h2>
+
+        {sgpas.map((s, index) => (
+          <input
+            key={index}
+            type="number"
+            placeholder={`SGPA Sem ${index + 1}`}
+            value={s.sgpa}
+            onChange={(e) => handleSGPAChange(index, e.target.value)}
+            className="w-full p-2 mb-3 rounded bg-gray-700 border border-gray-600"
+          />
+        ))}
+
+        <div className="flex gap-3">
+          <button
+            onClick={addSGPA}
+            className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
+          >
+            + Add SGPA
           </button>
           <button
             onClick={calculateCGPA}
-            className="glow-button bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+            className="glow-button bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
             Calculate CGPA
           </button>
         </div>
 
-        {cgpa !== null && (
-          <div className="text-center mt-6">
-            <h2 className="text-2xl font-semibold">
-              Your CGPA:{" "}
-              <span className="text-green-400">{cgpa}</span>
-            </h2>
-          </div>
+        {cgpaResult && (
+          <p className="mt-4 text-lg font-semibold">CGPA: {cgpaResult}</p>
         )}
       </div>
     </div>
