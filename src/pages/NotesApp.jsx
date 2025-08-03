@@ -1,24 +1,23 @@
-import { useState, useEffect } from "react";
+// src/pages/Notes.jsx
+import React, { useState, useEffect } from "react";
 
-const NotesApp = () => {
+const Notes = () => {
   const [notes, setNotes] = useState(() => {
-    const stored = localStorage.getItem("student_notes");
-    return stored ? JSON.parse(stored) : [];
+    const saved = localStorage.getItem("college_notes");
+    return saved ? JSON.parse(saved) : [];
   });
-  const [input, setInput] = useState("");
+
+  const [text, setText] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("student_notes", JSON.stringify(notes));
+    localStorage.setItem("college_notes", JSON.stringify(notes));
   }, [notes]);
 
   const addNote = () => {
-    if (input.trim() === "") return;
-    const newNote = {
-      id: Date.now(),
-      text: input,
-    };
-    setNotes([newNote, ...notes]);
-    setInput("");
+    if (text.trim()) {
+      setNotes([...notes, { id: Date.now(), text }]);
+      setText("");
+    }
   };
 
   const deleteNote = (id) => {
@@ -26,46 +25,43 @@ const NotesApp = () => {
   };
 
   return (
-    <div className="text-white p-6 max-w-3xl mx-auto bg-gray-900 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Notes App</h2>
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Write a note..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 rounded bg-gray-700"
-        />
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h2 className="text-3xl font-bold mb-6 text-center">📝 Notes</h2>
+      <div className="max-w-2xl mx-auto">
+        <textarea
+          className="w-full p-3 bg-gray-800 border border-gray-700 rounded mb-4 text-white"
+          rows="4"
+          placeholder="Write your note here..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        ></textarea>
         <button
           onClick={addNote}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+          className="glow-button bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded w-full mb-6"
         >
-          Add
+          ➕ Add Note
         </button>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className="bg-gray-800 p-4 rounded shadow relative group"
-          >
-            <p className="text-gray-200">{note.text}</p>
-            <button
-              onClick={() => deleteNote(note.id)}
-              className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-              title="Delete"
+        <div className="space-y-4">
+          {notes.map((note) => (
+            <div
+              key={note.id}
+              className="bg-gray-800 p-4 rounded shadow-md flex justify-between items-start"
             >
-              ✖
-            </button>
-          </div>
-        ))}
-        {notes.length === 0 && (
-          <p className="text-center text-gray-400 col-span-full">No notes yet.</p>
-        )}
+              <p className="whitespace-pre-wrap">{note.text}</p>
+              <button
+                onClick={() => deleteNote(note.id)}
+                className="text-red-400 hover:text-red-600 ml-4"
+              >
+                ❌
+              </button>
+            </div>
+          ))}
+          {notes.length === 0 && <p className="text-gray-400">No notes added yet.</p>}
+        </div>
       </div>
     </div>
   );
 };
 
-export default NotesApp;
+export default Notes;
